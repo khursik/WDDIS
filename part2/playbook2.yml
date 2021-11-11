@@ -1,0 +1,31 @@
+---
+- hosts: all
+  become: yes
+  gather_facts: no
+
+  tasks:
+  - name: pull branch master
+    git: repo={{ repo_url }} dest={{ repo_dir }} accept_hostkey=yes
+
+- hosts: all
+  become: yes
+  gather_facts: no
+  tasks:
+  - name: Install virtualenv via pip
+    pip: name=virtualenv executable=pip3
+
+  - name: Install python requirements
+    pip: virtualenv="{{ repo_dir }}/venv" virtualenv_python=python3.9 requirements="{{ repo_dir }}/requirements.txt"
+  - name: Flask migrate
+    ansible.builtin.shell: ./__init__.py
+    args:
+      stdin: migrate
+      executable: "{{ repo_dir }}/venv/bin/python"
+      chdir: "{{ flask_dir }}"
+
+- hosts: all
+  become: yes
+  gather_facts: no
+  tasks:
+  - name: uwsgi restart
+    service: name=uwsgi state=restarted
