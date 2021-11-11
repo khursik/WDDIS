@@ -1,0 +1,31 @@
+---
+- hosts: debian
+  tasks:
+    - name: "sudo apt install rsync"
+      apt: name=['rsync'] state=latest
+      become: yes
+    - name: "sync website"
+      synchronize:
+        src: site/
+        dest: /var/www/{{ domain }}
+        archive: no
+        checksum: yes
+        recursive: yes
+        delete: yes
+      become: no
+      
+
+- hosts: centos
+  tasks:
+    - name: "sudo yum install rsync"
+      yum: name=['rsync'] state=latest
+      become: yes
+    - name: "sync website"
+      synchronize:
+        src: site/
+        dest: /var/www/{{ domain }}
+        archive: no
+        checksum: yes
+        recursive: yes
+        delete: yes
+      become: no
