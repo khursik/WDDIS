@@ -1,0 +1,26 @@
+---
+- hosts: debian10
+  become: true
+  gather_facts: no
+  tasks:
+    - name: Running apt update
+      apt: update_cache=yes
+    - name: Installing required packages
+      apt: name={{item}} state=present
+      with_items:
+       - git
+       - python-pip
+       - uwsgi-plugin-python
+       - uwsgi
+
+- hosts: centOS8
+  become: true
+  gather_facts: no
+  tasks:
+    - name: Installing required packages
+      yum: name={{item}} state=present
+      with_items:
+       - git
+       - python-pip
+       - uwsgi-plugin-python
+       - uwsgi
